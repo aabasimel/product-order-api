@@ -1,0 +1,7 @@
+Django==5.0.3
+djangorestframework==3.15.2
+pillow==10.2.0
+asgriref
+django-extentions
+sqlparse
+tzdata
