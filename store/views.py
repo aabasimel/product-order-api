@@ -5,27 +5,48 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
 from django.db.models import Max
+from rest_framework import generics
+
+class ProductListAPIView(generics.ListAPIView):
+    queryset=Product.objects.all()
+    #used to retrieve products where the stock value is not equal to zero
+   # queryset=Product.filter(stock__get=0)
+   #used to retrieve products where the stock value is equal to zero
+    # queryset=Product.exclude(stock__get=0)
+
+    serializer_class=ProductSerializer
+
+# @api_view(['GET'])
+# def product_list(request):
+#     products=Product.objects.all()
+#     serializer=ProductSerializer(products, many=True)
+#     return Response(serializer.data,status=200)
+
+
+class ProductDetailAPIView(generics.RetrieveAPIView):
+    queryset=Product.objects.all()
+    serializer_class=ProductSerializer
+    lookup_url_kwarg='product_id'
 
 
 
-@api_view(['GET'])
-def product_list(request):
-    products=Product.objects.all()
-    serializer=ProductSerializer(products, many=True)
-    return Response(serializer.data,status=200)
+# @api_view(['GET'])
+# def product_detail(request,pk):
+#     product = get_object_or_404(Product,pk=pk)
+#     serializer=ProductSerializer(product)
+#     return Response(serializer.data)
 
+class OrderListAPIView(generics.ListAPIView):
+    #queryset=Order.objects.all()
+    queryset=Order.objects.prefetch_related('items__product')
 
-@api_view(['GET'])
-def product_detail(request,pk):
-    product = get_object_or_404(Product,pk=pk)
-    serializer=ProductSerializer(product)
-    return Response(serializer.data)
+    serializer_class=OrderSerializer
 
-@api_view(['GET'])
-def order_list(request):
-    orders=Order.objects.all()
-    serializer=OrderSerializer(orders, many=True)
-    return Response(serializer.data,status=200)
+# @api_view(['GET'])
+# def order_list(request):
+#     orders=Order.objects.all()
+#     serializer=OrderSerializer(orders, many=True)
+#     return Response(serializer.data,status=200)
 
 @api_view(['GET'])
 def product_info(request):
