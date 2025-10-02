@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'store',
     'django_extensions', 
     'django_filters',
+    'silk',
 
 ]
 
@@ -54,6 +55,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "silk.middleware.silkyMiddleware",
 ]
 
 ROOT_URLCONF = "product_order_api.urls"
