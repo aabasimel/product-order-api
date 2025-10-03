@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Max
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
 
 class ProductListAPIView(generics.ListAPIView):
     queryset=Product.objects.all()
@@ -16,6 +17,11 @@ class ProductListAPIView(generics.ListAPIView):
     # queryset=Product.exclude(stock__get=0)
 
     serializer_class=ProductSerializer
+
+class productCreateAPIView(generics.CreateAPIView):
+    model = Product
+    serializer_class=ProductSerializer
+
 
 # @api_view(['GET'])
 # def product_list(request):
@@ -61,15 +67,29 @@ class UserOrderListAPIView(generics.ListAPIView):
 #     serializer=OrderSerializer(orders, many=True)
 #     return Response(serializer.data,status=200)
 
-@api_view(['GET'])
-def product_info(request):
-    products=Product.objects.all()
-    serializer=ProductInfoSerializer({
+
+class ProductInfoAPIView(APIView):
+    def product_info(request):
+        products=Product.objects.all()
+        serializer=ProductInfoSerializer({
         'products':products,
         'count': len(products),
         'max_price':products.aggregate(max_price=Max('price'))['max_price']
     }
     )
-    return Response(serializer.data)
+        return Response(serializer.data)
+
+
+
+# @api_view(['GET'])
+# def product_info(request):
+#     products=Product.objects.all()
+#     serializer=ProductInfoSerializer({
+#         'products':products,
+#         'count': len(products),
+#         'max_price':products.aggregate(max_price=Max('price'))['max_price']
+#     }
+#     )
+#     return Response(serializer.data)
 
 
