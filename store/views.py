@@ -18,8 +18,16 @@ class ProductListAPIView(generics.ListAPIView):
 
     serializer_class=ProductSerializer
 
-class productCreateAPIView(generics.CreateAPIView):
-    model = Product
+# class productCreateAPIView(generics.CreateAPIView):
+#     model = Product
+#     serializer_class=ProductSerializer
+
+#     def create(self, request, *args, **kwargs):
+#         print(request.data)
+#         return super().create(request,*args, **kwargs)
+
+class ProductListCreateAPIView(generics.ListCreateAPIView):
+    queryset=Product.objects.all()
     serializer_class=ProductSerializer
 
 
