@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'django_extensions', 
     'django_filters',
     'silk',
+    'rest_framework.authtoken',
+    
 
 ]
 
