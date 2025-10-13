@@ -44,7 +44,7 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter] 
     #filterset_fields = ['name','price'] 
     filterset_class=ProductFilter
-    search_fields = ['name', 'description'] 
+    search_fields = ['=name', 'description'] 
     ordering_fields= ['name','price', 'stock']
     def get_permissions(self):
         self.permission_classes=[AllowAny]
