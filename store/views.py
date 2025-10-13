@@ -5,24 +5,33 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
 from django.db.models import Max
-from rest_framework import generics
 from rest_framework.permissions import (
     IsAuthenticated, 
     IsAdminUser, 
     AllowAny)
 from rest_framework.views import APIView
+from store.filters import ProductFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import generics, filters
+
+
 
 class ProductListAPIView(generics.ListAPIView):
-    queryset=Product.objects.all()
+    queryset=Product.objects.all().order_by('id')
     #used to retrieve products where the stock value is not equal to zero
    # queryset=Product.filter(stock__get=0)
    #used to retrieve products where the stock value is equal to zero
     # queryset=Product.exclude(stock__get=0)
 
     serializer_class=ProductSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]  # ✅ Added DjangoFilterBackend
+    #filterset_fields = ['name','price'] 
+    filterset_class=ProductFilter
+
+    #search_fields = ['name'] 
 
 # class productCreateAPIView(generics.CreateAPIView):
-#     model = Product
+#     model =  Product
 #     serializer_class=ProductSerializer
 
 #     def create(self, request, *args, **kwargs):
@@ -32,7 +41,10 @@ class ProductListAPIView(generics.ListAPIView):
 class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset=Product.objects.all()
     serializer_class=ProductSerializer
-
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter] 
+    #filterset_fields = ['name','price'] 
+    filterset_class=ProductFilter
+    #search_fields = ['name'] 
     def get_permissions(self):
         self.permission_classes=[AllowAny]
         if self.request.method =='POST':
@@ -88,7 +100,7 @@ class UserOrderListAPIView(generics.ListAPIView):
         return qs.filter(user=self.request.user)
         
         #return user.accounts.all()
-    
+
 
 # @api_view(['GET'])
 # def order_list(request):
