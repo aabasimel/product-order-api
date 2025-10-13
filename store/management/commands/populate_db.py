@@ -13,7 +13,7 @@ class Command(BaseCommand):
         user = User.objects.filter(username='admin').first()
         if not user:
             user = User.objects.create_superuser(username='admin', password='test')
-
+        
         # create products - name, desc, price, stock, image
         products = [
             Product(name="A Scanner Darkly", description=lorem_ipsum.paragraph(), price=Decimal('12.99'), stock=4),
