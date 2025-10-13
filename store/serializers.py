@@ -26,6 +26,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model=OrderItem
         fields=(
+            
             'product_name',
             'product_price',
             'quantity',
@@ -34,8 +35,10 @@ class OrderItemSerializer(serializers.ModelSerializer):
         )
     
 class OrderSerializer(serializers.ModelSerializer):
+    order_id = serializers.UUIDField(read_only=True)
     items=OrderItemSerializer(many=True, read_only=True)
     total_price=serializers.SerializerMethodField()
+
     def get_total_price(self,obj):
         order_items=obj.items.all()
         return sum(order_item.item_subtotal for order_item in order_items)
