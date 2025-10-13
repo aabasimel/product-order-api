@@ -16,17 +16,17 @@ from rest_framework import generics, filters
 
 
 
-class ProductListAPIView(generics.ListAPIView):
-    queryset=Product.objects.all().order_by('id')
-    #used to retrieve products where the stock value is not equal to zero
-   # queryset=Product.filter(stock__get=0)
-   #used to retrieve products where the stock value is equal to zero
-    # queryset=Product.exclude(stock__get=0)
+# class ProductListAPIView(generics.ListAPIView):
+#     queryset=Product.objects.all().order_by('id')
+#     #used to retrieve products where the stock value is not equal to zero
+#    # queryset=Product.filter(stock__get=0)
+#    #used to retrieve products where the stock value is equal to zero
+#     # queryset=Product.exclude(stock__get=0)
 
-    serializer_class=ProductSerializer
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]  # ✅ Added DjangoFilterBackend
-    #filterset_fields = ['name','price'] 
-    filterset_class=ProductFilter
+#     serializer_class=ProductSerializer
+#     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]  
+#     #filterset_fields = ['name','price'] 
+#     filterset_class=ProductFilter
 
     #search_fields = ['name'] 
 
@@ -44,7 +44,8 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter] 
     #filterset_fields = ['name','price'] 
     filterset_class=ProductFilter
-    #search_fields = ['name'] 
+    search_fields = ['name', 'description'] 
+    ordering_fields= ['name','price', 'stock']
     def get_permissions(self):
         self.permission_classes=[AllowAny]
         if self.request.method =='POST':
