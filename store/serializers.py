@@ -54,14 +54,6 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         return instance
 
 
-
-
-
-
-
-
-
-
     def create(self, validated_data):
         orderitem_data = validated_data.pop('items')
         order = Order.objects.create(**validated_data)
