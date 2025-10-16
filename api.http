@@ -35,12 +35,12 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:8081/api/token/ HTTP/1.1
+POST http://localhost:8080/api/token/ HTTP/1.1
 Content-Type: application/json
 
 {
-    "username":"moah",
-    "password":"123"
+    "username":"admin",
+    "password":"test"
 }
 
 ###
@@ -55,5 +55,52 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:8081/orders/ HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzYwMzY4MjU0LCJpYXQiOjE3NjAzNjc5NTQsImp0aSI6ImMyNDZhMDBkYmZmYzQzMzA4OTY0YWY0NThlN2I4MWQ3IiwidXNlcl9pZCI6IjUifQ.8RBYgqBwnxLSSQ2U3Ize2zRaxzMqo_HCjkW4P9QmSsM
+GET http://localhost:8080/orders/ HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzYwNTU3NDk0LCJpYXQiOjE3NjA1NTcxOTQsImp0aSI6IjdkNTVjNDQ4ZmIxNzRkMzFhNzU5NTJjZDAwNDI5ZTI0IiwidXNlcl9pZCI6IjEifQ.1KlZaFTOu9BbDboYRIsgPT6xaO4UMFbmEWblafk4blA
+
+###
+POST  http://localhost:8080/orders/ HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzYwNTU5MDc1LCJpYXQiOjE3NjA1NTg3NzUsImp0aSI6IjFlM2E2OWYxMjUxZTQ1MmI5NWNhMDE4MmYxODlkNDViIiwidXNlcl9pZCI6IjEifQ.8PnYKYIQFvguHp4Q3YdPp9YC6aBsVxh-4czMcQ3nZEo
+
+{
+    "status" : "Pending",
+    "user":1,
+    "items":[
+        {
+            "product":2,
+            "quantity":1000
+
+        }, 
+        {
+         "product":3,
+        "quantity":500
+        }
+    ]
+}
+###
+
+PUT http://localhost:8080/orders/1/ HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzYwNTU4MTE4LCJpYXQiOjE3NjA1NTc4MTgsImp0aSI6IjQ4NzU4MjEzYmI5OTQ1ZjJhNDRiY2YwZjUwNzcxODUxIiwidXNlcl9pZCI6IjMifQ.YPATMehxxlsrBvPlxHf7L9WCMKBDMn7HqtNHUeNeJVg
+
+{
+    "status" : "Confirmed",
+    "user":1,
+    "items":[
+        {
+            "product":20,
+            "quantity":20
+
+        }, 
+        {
+         "product":20,
+        "quantity":20
+        }
+    ]
+}
+
+### 
+
+GET http://localhost:8080/orders/1/ HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzYwNTU4MjU5LCJpYXQiOjE3NjA1NTc5NTksImp0aSI6ImVhOWRmMmIwN2IwNDRjYTM5ZTAyMmEzZmIzMzJhMzdmIiwidXNlcl9pZCI6IjMifQ.2W_-8LAygyInUohDKHirbfZIDccGqQtH3QBlWUQdcms

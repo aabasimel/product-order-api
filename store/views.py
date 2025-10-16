@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from store.serializers import ProductSerializer,OrderSerializer,OrderItemSerializer,ProductInfoSerializer
+from store.serializers import ProductSerializer,OrderSerializer,OrderItemSerializer,ProductInfoSerializer, OrderCreateSerializer
 from store.models import Product,Order,OrderItem
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, action
@@ -108,6 +108,12 @@ class OrderViewSet(viewsets.ModelViewSet):
     filterset_class = OrderFilter
     filter_backends = [DjangoFilterBackend]
 
+    def get_serializer_class(self):
+        # can also check if POST: if self.request.method == 'POST'
+        if self.action == 'create' or 'update':
+            return OrderCreateSerializer
+        return super().get_serializer_class()
+
     def get_queryset(self):
         qs=super().get_queryset()
         if not self.request.user.is_staff:
@@ -115,11 +121,11 @@ class OrderViewSet(viewsets.ModelViewSet):
         return qs
     
 
-    @action(detail=False, methods=['get'], url_path='user-orders')
-    def user_orders(self, request):
-        orders=self.get_queryset().filter(user=request.user)
-        serializer=self.get_serializer(orders, many=True)
-        return Response(serializer.data)
+    # @action(detail=False, methods=['get'], url_path='user-orders')
+    # def user_orders(self, request):
+    #     orders=self.get_queryset().filter(user=request.user)
+    #     serializer=self.get_serializer(orders, many=True)
+    #     return Response(serializer.data)
 
 #     queryset=Order.objects.prefetch_related('items__product')
 #     serializer_class=OrderSerializer
