@@ -10,11 +10,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         # get or create superuser
-        user = User.objects.filter(username='admin').first()
+        email = 'admin@example.com'
+        user = User.objects.filter(email=email).first()
         if not user:
-            user = User.objects.create_superuser(username='admin', password='test')
+            user = User.objects.create_superuser(email=email, password='test')
         
-        # create products - name, desc, price, stock, image
+        # create products - name, desc, price, stock
         products = [
             Product(name="A Scanner Darkly", description=lorem_ipsum.paragraph(), price=Decimal('12.99'), stock=4),
             Product(name="Coffee Machine", description=lorem_ipsum.paragraph(), price=Decimal('70.99'), stock=6),
@@ -28,7 +29,6 @@ class Command(BaseCommand):
         Product.objects.bulk_create(products)
         products = Product.objects.all()
 
-
         # create some dummy orders tied to the superuser
         for _ in range(3):
             # create an Order with 2 order items
@@ -37,3 +37,5 @@ class Command(BaseCommand):
                 OrderItem.objects.create(
                     order=order, product=product, quantity=random.randint(1,3)
                 )
+
+        self.stdout.write(self.style.SUCCESS('Database populated successfully!'))
