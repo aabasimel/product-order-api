@@ -1,6 +1,6 @@
 from django.http import JsonResponse
-from store.serializers import ProductSerializer,OrderSerializer,OrderItemSerializer,ProductInfoSerializer, OrderCreateSerializer
-from .models import Product,Order,OrderItem
+from store.serializers import ProductSerializer,OrderSerializer,OrderItemSerializer,ProductInfoSerializer, OrderCreateSerializer, LoginSerializer,RegisterSerializer
+from .models import Product,Order,OrderItem,User
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, action
 from django.shortcuts import get_object_or_404
@@ -17,9 +17,15 @@ from rest_framework import generics, filters, viewsets
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-from store.tasks import send_order_confirmation_email
+from store.tasks import send_order_confirmation_email,send_verification_email
 
-
+from .utils import generate_email_token
+from django.conf import settings
+import jwt
+from rest_framework.generics import GenericAPIView
+from urllib.parse import unquote
+from datetime import datetime, timedelta
+from rest_framework_simplejwt.tokens import RefreshToken
 
 # class ProductListAPIView(generics.ListAPIView):
 #     queryset=Product.objects.all().order_by('id')
@@ -185,3 +191,100 @@ class ProductInfoAPIView(APIView):
 #     return Response(serializer.data)
 
 
+
+class RegisterView(GenericAPIView):
+    serializer_class = RegisterSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data['email']
+        password = serializer.validated_data['password']
+
+        user = User.objects.filter(email=email).first()
+
+        if user:
+            if user.is_active:
+                # Email already verified → cannot register again
+                return Response({"error": "Email already registered"}, status=400)
+            else:
+                # User exists but not verified → resend verification email
+                token = generate_email_token(user)
+                verification_link = f"http://localhost:8080/verify-email?token={token}"
+                send_verification_email.delay(email, verification_link)
+                return Response({"message": "Verification email resent"}, status=200)
+        else:
+            # New user → create and send verification email
+            user = User.objects.create_user(email=email, password=password)
+            user.is_active = False
+            user.save()
+
+            token = generate_email_token(user)
+            verification_link = f"http://localhost:8080/verify-email?token={token}"
+            send_verification_email.delay(email, verification_link)
+
+            return Response({"message": "Verification email sent"}, status=201)
+     
+
+
+
+class VerifyEmailView(APIView):
+    def get(self, request):
+        token = request.GET.get('token', '').strip()
+        if not token:
+            return Response({"error": "Token is required"}, status=400)
+
+        # decode URL-encoded token
+        token = unquote(token)
+
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+            user_id = payload.get('user_id')
+
+            user = User.objects.get(id=user_id)
+
+            if user.is_active:
+                return Response({"message": "Account already verified"}, status=200)
+
+            # Activate the user
+            user.is_active = True
+            user.save()
+
+            return Response({"message": "Email verified successfully"}, status=200)
+
+        except jwt.ExpiredSignatureError:
+            return Response({"error": "Token has expired"}, status=400)
+        except jwt.InvalidTokenError:
+            return Response({"error": "Invalid token"}, status=400)
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=404)
+
+class LoginView(GenericAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = LoginSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data['email']
+        password = serializer.validated_data['password']
+
+        user = User.objects.filter(email=email).first()
+
+        if user is None or not user.check_password(password):
+            return Response({"error": "Invalid credentials"}, status=401)
+
+        if not user.is_active:
+            return Response({"error": "Email not verified"}, status=403)
+
+        # ✔ Generate REAL SimpleJWT tokens
+        refresh = RefreshToken.for_user(user)
+        access = refresh.access_token
+
+        return Response({
+            "refresh": str(refresh),
+            "access": str(access),
+        }, status=200)
