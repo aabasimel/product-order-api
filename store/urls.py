@@ -14,7 +14,10 @@ urlpatterns = [
     #path("orders/",views.OrderListAPIView.as_view()),
     #path("user-orders/",views.UserOrderListAPIView.as_view(), name="user-orders"),
     #path('products/create/',views.productCreateAPIView.as_view()),
-
+    path('register/',views.RegisterView.as_view()),
+    path('verify-email/',views.VerifyEmailView.as_view()),
+    path('login/',views.LoginView.as_view()),
+   
   
 
 
