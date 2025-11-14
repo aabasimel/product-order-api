@@ -108,3 +108,14 @@ class ProductInfoSerializer(serializers.Serializer):
     count=serializers.IntegerField()
     max_price=serializers.FloatField()
     
+
+class VerifyEmailSerializer(serializers.Serializer):
+    pass
+
+class RegisterSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()
+
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()
