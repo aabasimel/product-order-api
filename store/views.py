@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from store.serializers import ProductSerializer,OrderSerializer,OrderItemSerializer,ProductInfoSerializer, OrderCreateSerializer
-from store.models import Product,Order,OrderItem
+from .models import Product,Order,OrderItem
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, action
 from django.shortcuts import get_object_or_404
@@ -15,7 +15,9 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, filters, viewsets
 
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
-
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from store.tasks import send_order_confirmation_email
 
 
 
@@ -50,11 +52,15 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     search_fields = ['=name', 'description'] 
     ordering_fields= ['name','price', 'stock']
     #pagination_class = PageNumberPagination
-    pagination_class=LimitOffsetPagination
+    #pagination_class=LimitOffsetPagination
     # pagination_class.page_size=2
     # pagination_class.page_query_param= 'pagenum'
     # pagination_class.page_size_query_param= 'size'
     # pagination_class.max_page_size=6
+    @method_decorator(cache_page(60 * 15, key_prefix='product_list'))
+    def list(self,request,*args,**kwargs):
+        return super().list(request,*args,**kwargs)
+
     def get_permissions(self):
         self.permission_classes=[AllowAny]
         if self.request.method =='POST':
@@ -62,6 +68,10 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
         return super().get_permissions()
 
 
+    def get_queryset(self):
+        import time
+        time.sleep(10)
+        return super().get_queryset()
 
 # @api_view(['GET'])
 # def product_list(request):
@@ -109,7 +119,8 @@ class OrderViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
 
     def  perform_create(self,serializer):
-        serializer.save(user=self.request.user)
+        order=serializer.save(user=self.request.user)
+        send_order_confirmation_email.delay(order.order_id,self.request.user.email)
     def get_serializer_class(self):
         # can also check if POST: if self.request.method == 'POST'
         if self.action == 'create' or 'update':
@@ -117,6 +128,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         return super().get_serializer_class()
 
     def get_queryset(self):
+        
         qs=super().get_queryset()
         if not self.request.user.is_staff:
             qs=qs.filter(user=self.request.user)

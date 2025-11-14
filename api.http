@@ -1,3 +1,7 @@
+
+####
+
+
 GET http://localhost:8000/products/ HTTP/1.1
 
 ###
@@ -39,8 +43,8 @@ POST http://localhost:8080/api/token/ HTTP/1.1
 Content-Type: application/json
 
 {
-    "email":"shekemal@gmail.com",
-    "password":"password123"
+    "email":"abasimelahmed@gmail.com",
+    "password":"123"
 }
 
 ###
@@ -61,8 +65,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
 ###
 POST  http://localhost:8080/orders/ HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzYwOTMzMTc4LCJpYXQiOjE3NjA5MzI4NzgsImp0aSI6IjQ5N2UxMGVhNWRhODQwMjU4NWUxYTkxMGM5ZDk3NTVmIiwidXNlcl9pZCI6IjEifQ.C6SASFTt9x5E7NclluR9alkkz7XHuYlWIWAgE6jy0_c
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzYzMTEyNjUwLCJpYXQiOjE3NjMxMTIzNTAsImp0aSI6IjYwZTg3ODNiMGQwZjQzM2E4MzhmZmU1ZjUzZTMwNWFhIiwidXNlcl9pZCI6IjMifQ.X4g3-6wtdFZ-Ncwj__qK_roQo2KZdx_KSTzaSX1z8TQ
 
 {
     "status" : "Pending",
@@ -83,14 +86,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
 
 PUT http://localhost:8080/orders/1/ HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzYwOTMxODMxLCJpYXQiOjE3NjA5MzE1MzEsImp0aSI6IjY2OTlmZDUxMjhiZDQzYzRhOTRmNjg4NzZjZGU2OGRmIiwidXNlcl9pZCI6IjEifQ.5yd-FxlsStcKNKx7oHGMD-M-q535dIgOSxxDZYGmCAY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzYzMDM2ODk0LCJpYXQiOjE3NjMwMzY1OTQsImp0aSI6IjA1ZjRhNTM3ZmU2MDRlYzdiNzlhODFmNDA3YWQ2OTM5IiwidXNlcl9pZCI6IjEifQ.xTEB7i0BBst_lsI7S9SimkV-RmMINDjlYDWB2pK6Nfs
 
 {
     "status" : "Confirmed",
  
     "items":[
         {
-            "product":20,
+            "product":21,
             "quantity":20
 
         }, 
