@@ -1,8 +1,8 @@
 #!/bin/bash
-APP_PORT=${PORT:-8080}
 set -e
 set -x
 cd /app/
+
 # Activate virtualenv
 source /opt/venv/bin/activate
 
@@ -15,8 +15,8 @@ echo "Postgres ready!"
 
 # Run migrations
 echo "Running migrations..."
-bash /app/migrate.sh
+bash /app/migrate-celery.sh  
 
-
-# Use Gunicorn from the Docker venv
-/opt/venv/bin/gunicorn --worker-tmp-dir /dev/shm product_order_api.wsgi:application --bind "0.0.0.0:${APP_PORT}"
+# Start Celery
+echo "Starting Celery worker..."
+exec /opt/venv/bin/celery -A product_order_api worker --loglevel=info
