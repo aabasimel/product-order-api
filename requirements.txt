@@ -28,3 +28,7 @@ django-storages
 boto3
 gunicorn
 django-dotenv
+redis[hiredis]
+django-redis
+celery
+django-allauth[socialaccounts]
